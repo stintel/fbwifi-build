@@ -100,13 +100,13 @@ def setup_tree():
 base_dir = Path.cwd().absolute()
 clone = False
 config = "config.yml"
-device = None
+target = None
 profiles = "../profiles"
 openwrt = "openwrt"
 git_ref = ""
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "", ["clone", "config=", "device=", "reference=" ])
+	opts, args = getopt.getopt(sys.argv[1:], "", ["clone", "config=", "target=", "reference=" ])
 except getopt.GetoptError as err:
 	print(err)
 	sys.exit(2)
@@ -117,10 +117,10 @@ for o, a in opts:
 		clone = True
 	elif o in ("--config"):
 		config = a
-	elif o in ("--device"):
-		device = a
 	elif o in ("--reference"):
 		git_ref = a
+	elif o in ("--target"):
+		target = a
 	else:
 		assert False, "unhandled option"
 
@@ -129,19 +129,19 @@ if not Path(config).is_file():
 	sys.exit(1)
 config = yaml.safe_load(open(config))
 
-if not device:
-	print("Missing --device option")
+if not target:
+	print("Missing --target option")
 	sys.exit(1)
-deviceconfig_folder = config.get("deviceconfig_folder")
-if not deviceconfig_folder:
-	print("Missing deviceconfig_folder within config file")
+targetconfig_folder = config.get("targetconfig_folder")
+if not targetconfig_folder:
+	print("Missing targetconfig_folder within config file")
 	sys.exit(1)
-if not Path(deviceconfig_folder).is_dir():
-	print(f"Missing deviceconfig_folder {deviceconfig_folder}")
+if not Path(targetconfig_folder).is_dir():
+	print(f"Missing targetconfig_folder {targetconfig_folder}")
 	sys.exit(1)
-deviceconfig_file = os.path.join(deviceconfig_folder, device)
-if not Path(deviceconfig_file).is_file():
-	print(f"Missing deviceconfig_file {deviceconfig_file}")
+targetconfig_file = os.path.join(targetconfig_folder, target)
+if not Path(targetconfig_file).is_file():
+	print(f"Missing targetconfig_file {targetconfig_file}")
 	sys.exit(1)
 
 if clone:

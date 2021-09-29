@@ -1,0 +1,5 @@
+CONFIG_TARGET_ath79=y
+CONFIG_TARGET_ath79_generic=y
+CONFIG_TARGET_ath79_generic_DEVICE_comfast_cf-wr752ac-v1=y
+CONFIG_PACKAGE_fbwifi=y
+CONFIG_PACKAGE_luci=y
