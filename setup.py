@@ -29,7 +29,7 @@ def fetch_tree():
 	try:
 		makefile = openwrt +"/Makefile"
 		if not Path(makefile).is_file():
-			print("### OpenWrt checkout is not present. Please run --setup")
+			print("### OpenWrt checkout is not present. Please run --clone")
 			sys.exit(-1)
 
 		print("### Fetch tree")
@@ -98,7 +98,7 @@ def setup_tree():
 
 
 base_dir = Path.cwd().absolute()
-setup = False
+clone = False
 rebase = False
 config = "config.yml"
 profiles = "../profiles"
@@ -106,15 +106,15 @@ openwrt = "openwrt"
 git_ref = ""
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "src:", ["setup", "rebase", "config=", "reference=" ])
+	opts, args = getopt.getopt(sys.argv[1:], "rc:", ["clone", "rebase", "config=", "reference=" ])
 except getopt.GetoptError as err:
 	print(err)
 	sys.exit(2)
 
 
 for o, a in opts:
-	if o in ("-s", "--setup"):
-		setup = True
+	if o in ("--clone"):
+		clone = True
 	elif o in ("-r", "--rebase"):
 		rebase = True
 	elif o in ("-c", "--config"):
@@ -129,7 +129,7 @@ if not Path(config).is_file():
 	sys.exit(1)
 config = yaml.safe_load(open(config))
 
-if setup:
+if clone:
 	clone_tree()
 	reset_tree()
 	setup_tree()
