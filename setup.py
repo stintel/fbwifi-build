@@ -106,7 +106,7 @@ openwrt = "openwrt"
 git_ref = ""
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "srdc:f:2", ["setup", "rebase", "config=", "folder=", "reference=", "20x" ])
+	opts, args = getopt.getopt(sys.argv[1:], "src:", ["setup", "rebase", "config=", "reference=" ])
 except getopt.GetoptError as err:
 	print(err)
 	sys.exit(2)
