@@ -96,28 +96,9 @@ def setup_tree():
 	finally:
 		os.chdir(base_dir)
 
-def update_patches():
-	try:
-		print("### Updating patches")
-		run(
-			["rm", "-r", "patches"], check=True,
-		)
-		os.chdir(openwrt)
-		run(
-			["git", "format-patch", config.get("revision", config["branch"]), "-o", "../patches"],
-			check=True,
-		)
-		print("### Updating done")
-	except:
-		print("### updating failed failed")
-		sys.exit(1)
-	finally:
-		os.chdir(base_dir)
-
 
 base_dir = Path.cwd().absolute()
 setup = False
-update = False
 rebase = False
 config = "config.yml"
 profiles = "../profiles"
@@ -125,7 +106,7 @@ openwrt = "openwrt"
 git_ref = ""
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "srdc:f:u2", ["setup", "rebase", "config=", "folder=", "reference=", "update", "20x" ])
+	opts, args = getopt.getopt(sys.argv[1:], "srdc:f:2", ["setup", "rebase", "config=", "folder=", "reference=", "20x" ])
 except getopt.GetoptError as err:
 	print(err)
 	sys.exit(2)
@@ -136,8 +117,6 @@ for o, a in opts:
 		setup = True
 	elif o in ("-r", "--rebase"):
 		rebase = True
-	elif o in ("-u", "--update"):
-		update = True
 	elif o in ("-c", "--config"):
 		config = a
 	elif o in ("--reference"):
@@ -158,5 +137,3 @@ elif rebase:
 	fetch_tree()
 	reset_tree()
 	setup_tree()
-elif update:
-	update_patches()
