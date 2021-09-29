@@ -11,7 +11,7 @@ def clone_tree():
 	try:
 		makefile = openwrt +"/Makefile"
 		if Path(makefile).is_file():
-			print("### OpenWrt checkout is already present. Please run --rebase")
+			print("### OpenWrt checkout is already present. Please remove it, or run without --clone")
 			sys.exit(-1)
 
 		print("### Cloning tree")
@@ -99,14 +99,13 @@ def setup_tree():
 
 base_dir = Path.cwd().absolute()
 clone = False
-rebase = False
 config = "config.yml"
 profiles = "../profiles"
 openwrt = "openwrt"
 git_ref = ""
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "rc:", ["clone", "rebase", "config=", "reference=" ])
+	opts, args = getopt.getopt(sys.argv[1:], "c:", ["clone", "config=", "reference=" ])
 except getopt.GetoptError as err:
 	print(err)
 	sys.exit(2)
@@ -115,8 +114,6 @@ except getopt.GetoptError as err:
 for o, a in opts:
 	if o in ("--clone"):
 		clone = True
-	elif o in ("-r", "--rebase"):
-		rebase = True
 	elif o in ("-c", "--config"):
 		config = a
 	elif o in ("--reference"):
@@ -133,7 +130,7 @@ if clone:
 	clone_tree()
 	reset_tree()
 	setup_tree()
-elif rebase:
+else:
 	fetch_tree()
 	reset_tree()
 	setup_tree()
