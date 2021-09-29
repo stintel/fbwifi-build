@@ -1,5 +1,7 @@
 repo:  https://github.com/openwrt/openwrt.git
 branch: openwrt-21.02
 revision: b2ae4233149dfd78f2ac00bb5327695bcacdc255   # tag:v21.02.0
+
 targetconfig_folder: deviceconfigs
 patches_folder: patches
+additions_folder: files

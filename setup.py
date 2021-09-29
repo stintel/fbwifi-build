@@ -78,7 +78,7 @@ def apply_patches():
 			print(f"Patch folder {patch_folder} not found")
 			sys.exit(-1)
 
-		print(f"Adding patches from {patch_folder}")
+		print(f"Applying patches from {patch_folder}")
 
 		patches.extend(
 			sorted(list((base_dir / folder).glob("*.patch")), key=os.path.basename)
@@ -96,6 +96,32 @@ def apply_patches():
 		print("### Patches done")
 	except:
 		print("### Applying patches failed")
+		sys.exit(1)
+	finally:
+		os.chdir(base_dir)
+
+# Add files to the OpenWrt build, using
+# https://openwrt.org/docs/guide-developer/build-system/use-buildsystem#custom_files
+def add_files():
+	try:
+		print("### Adding files")
+
+		folder = config.get("additions_folder")
+		if not folder:
+			print("Missing additions_folder within config file")
+			sys.exit(1)
+		additions_folder = base_dir / folder
+		if not additions_folder.is_dir():
+			print(f"Additions folder {additions_folder} not found")
+			sys.exit(-1)
+
+		print(f"Adding files from {additions_folder}")
+		os.chdir(openwrt)
+		run(["rm", "-f", "files"], check=True)
+		run(["ln", "-s", additions_folder, "files"], check=True)
+		print("### Adding files done")
+	except:
+		print("### Adding files failed")
 		sys.exit(1)
 	finally:
 		os.chdir(base_dir)
@@ -154,9 +180,5 @@ else:
 	fetch_tree()
 reset_tree()
 apply_patches()
+add_files()
 shutil.copyfile(targetconfig_file, os.path.join(openwrt, ".config"))
-
-print("")
-print("Ready to build!  Run the following:")
-print(f"  cd {openwrt}")
-print("  make -j $(nproc) defconfig clean world")
