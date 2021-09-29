@@ -67,18 +67,21 @@ def reset_tree():
 def apply_patches():
 	try:
 		print("### Applying patches")
-
 		patches = []
-		for folder in config.get("patch_folders", []):
-			patch_folder = base_dir / folder
-			if not patch_folder.is_dir():
-				print(f"Patch folder {patch_folder} not found")
-				sys.exit(-1)
 
-			print(f"Adding patches from {patch_folder}")
+		folder = config.get("patches_folder")
+		if not folder:
+			print("Missing patches_folder within config file")
+			sys.exit(1)
+		patch_folder = base_dir / folder
+		if not patch_folder.is_dir():
+			print(f"Patch folder {patch_folder} not found")
+			sys.exit(-1)
 
-			patches.extend(
-				sorted(list((base_dir / folder).glob("*.patch")), key=os.path.basename)
+		print(f"Adding patches from {patch_folder}")
+
+		patches.extend(
+			sorted(list((base_dir / folder).glob("*.patch")), key=os.path.basename)
 		)
 
 		print(f"Found {len(patches)} patches")
@@ -92,7 +95,7 @@ def apply_patches():
 		)
 		print("### Patches done")
 	except:
-		print("### Setting up the tree failed")
+		print("### Applying patches failed")
 		sys.exit(1)
 	finally:
 		os.chdir(base_dir)
