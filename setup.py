@@ -105,7 +105,7 @@ openwrt = "openwrt"
 git_ref = ""
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], "c:", ["clone", "config=", "reference=" ])
+	opts, args = getopt.getopt(sys.argv[1:], "", ["clone", "config=", "reference=" ])
 except getopt.GetoptError as err:
 	print(err)
 	sys.exit(2)
@@ -114,7 +114,7 @@ except getopt.GetoptError as err:
 for o, a in opts:
 	if o in ("--clone"):
 		clone = True
-	elif o in ("-c", "--config"):
+	elif o in ("--config"):
 		config = a
 	elif o in ("--reference"):
 		git_ref = a
