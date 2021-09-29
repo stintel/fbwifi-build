@@ -1,6 +1,7 @@
 repo:  https://github.com/openwrt/openwrt.git
 branch: openwrt-21.02
 revision: 6fd65c657351908302b37447675ee352ec927d93
+deviceconfig_folder: deviceconfigs
 
 patch_folders:
   - backports/
