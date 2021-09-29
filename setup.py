@@ -144,9 +144,6 @@ if not Path(deviceconfig_file).is_file():
 	print(f"Missing deviceconfig_file {deviceconfig_file}")
 	sys.exit(1)
 
-print("It would work...")
-sys.exit(0)
-
 if clone:
 	clone_tree()
 	reset_tree()
