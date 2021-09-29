@@ -64,7 +64,7 @@ def reset_tree():
 	finally:
 		os.chdir(base_dir)
 
-def setup_tree():
+def apply_patches():
 	try:
 		print("### Applying patches")
 
@@ -150,7 +150,7 @@ if clone:
 else:
 	fetch_tree()
 reset_tree()
-setup_tree()
+apply_patches()
 shutil.copyfile(targetconfig_file, os.path.join(openwrt, ".config"))
 
 print("")
