@@ -1,0 +1,49 @@
+#!/bin/sh
+#
+# bootscript1 -- performs the minimum operations necessary to: 
+# - get WAN interface configured and connected to the Internet
+# - download bootscript2 (or fall back to a local version) and launch it
+
+echo
+echo "Running bootscript1"
+BOOTSCRIPT2_SOURCE_URL=https://raw.githubusercontent.com/epoger/device-configs/main/fbwifi-v1/bootscript2
+BOOTSCRIPT2_SOURCE_LOCAL=/etc/bootscript2-local
+BOOTSCRIPT2_DEST=/tmp/bootscript2
+
+# Indicate current status by updating SSID.
+set_status_ssid()
+{
+	STATUS=$1
+	RAWMAC1=$(cat /sys/class/net/eth0/address)
+	RAWMAC2=${RAWMAC1//:/}
+	MACLAST6=${RAWMAC2:6:6}
+	SSID="FBWiFi_${STATUS}_${MACLAST6}"
+	echo Setting status SSID to $SSID
+	uci set wireless.default_radio0.ssid="$SSID"
+	reload_config
+}
+
+# Will not return until the default route has appeared.
+wait_for_default_route()
+{
+	echo Waiting for default route ...
+	while true; do
+		ip route | grep default && return
+		echo wait_for_default_route
+		sleep 1
+	done
+}
+
+set_status_ssid LookingForDHCP
+wait_for_default_route
+
+set_status_ssid DownloadingBootscript
+rm -f $BOOTSCRIPT2_DEST
+if wget -O $BOOTSCRIPT2_DEST $BOOTSCRIPT2_SOURCE_URL ; then
+	set_status_ssid LaunchingNetworkBootscript
+else
+	set_status_ssid LaunchingLocalBootscript
+	cp $BOOTSCRIPT2_SOURCE_LOCAL $BOOTSCRIPT2_DEST
+fi
+source $BOOTSCRIPT2_DEST
+
