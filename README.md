@@ -20,13 +20,11 @@ Additional configurations are picked up from `config.yml`.
 Once setup.py has successfully completed, you are ready to build OpenWrt:
 ```
 cd openwrt
-./scripts/feeds install -a
 make -j $(nproc) defconfig clean world
 ```
 
 Or, if you're like me and you want to make sure the build will keep running even if you log out, you can use [nohup](https://en.wikipedia.org/wiki/Nohup):
 ```
 cd openwrt
-./scripts/feeds install -a
 rm -f nohup.out && nohup bash -c 'date >starttime ; make -j $(nproc) defconfig clean world ; date >endtime' &
 ```

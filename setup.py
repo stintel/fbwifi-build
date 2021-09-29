@@ -64,6 +64,30 @@ def reset_tree():
 	finally:
 		os.chdir(base_dir)
 
+# Add our own custom feeds, and run scripts/feeds/update and scripts/feeds/install.
+def update_feeds():
+	try:
+		print("### Updating feeds")
+		feeds_conf_filepath = os.path.join(openwrt, "feeds.conf")
+		print(f"Updating feed config at {feeds_conf_filepath}")
+		shutil.copyfile(os.path.join(openwrt, "feeds.conf.default"), feeds_conf_filepath)
+		with open(feeds_conf_filepath, "a") as feeds_conf_file:
+			feeds_conf_file.write("src-git fbc https://github.com/facebookincubator/fbc_owrt_feed.git^b67be64f5086df4ace5f2c550d8abae5f8951be2\n")
+
+		os.chdir(openwrt)
+		scripts_feeds_path = os.path.join(".", "scripts", "feeds")
+		print(f"Calling {scripts_feeds_path} update -a")
+		os.system(f"{scripts_feeds_path} update -a");
+		print(f"Calling {scripts_feeds_path} install -a")
+		os.system(f"{scripts_feeds_path} install -a");
+
+		print("### Updating feeds done")
+	except:
+		print("### Updating feeds failed")
+		sys.exit(1)
+	finally:
+		os.chdir(base_dir)
+
 def apply_patches():
 	try:
 		print("### Applying patches")
@@ -182,6 +206,7 @@ if clone:
 else:
 	fetch_tree()
 reset_tree()
+update_feeds()
 apply_patches()
 add_files()
 shutil.copyfile(targetconfig_file, os.path.join(openwrt, ".config"))
