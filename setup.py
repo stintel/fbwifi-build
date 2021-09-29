@@ -117,8 +117,11 @@ def add_files():
 
 		print(f"Adding files from {additions_folder}")
 		os.chdir(openwrt)
-		run(["rm", "-f", "files"], check=True)
-		run(["ln", "-s", additions_folder, "files"], check=True)
+		shutil.rmtree("files", ignore_errors=True)
+		shutil.copytree(additions_folder, "files")
+		os.chdir(base_dir)
+		build_info_filepath = os.path.join(openwrt, "files", "fbwifi-build-info")
+		os.system("git show --no-patch >" + build_info_filepath)
 		print("### Adding files done")
 	except:
 		print("### Adding files failed")
