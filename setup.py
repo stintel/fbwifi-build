@@ -3,6 +3,7 @@
 from pathlib import Path
 from subprocess import run
 import os
+import shutil
 import sys
 import yaml
 import getopt
@@ -146,9 +147,13 @@ if not Path(targetconfig_file).is_file():
 
 if clone:
 	clone_tree()
-	reset_tree()
-	setup_tree()
 else:
 	fetch_tree()
-	reset_tree()
-	setup_tree()
+reset_tree()
+setup_tree()
+shutil.copyfile(targetconfig_file, os.path.join(openwrt, ".config"))
+
+print("")
+print("Ready to build!  Run the following:")
+print(f"  cd {openwrt}")
+print("  make -j $(nproc) defconfig clean world")
