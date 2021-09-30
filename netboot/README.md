@@ -1,1 +1,1 @@
-netboot files go here
+Files that the device will download at boot time go here.
