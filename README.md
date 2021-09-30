@@ -28,3 +28,5 @@ Or, if you're like me and you want to make sure the build will keep running even
 cd openwrt
 rm -f nohup.out && nohup bash -c 'date >starttime ; make -j $(nproc) defconfig clean world ; date >endtime' &
 ```
+
+Once the build is complete, you will find the output files in (e.g.) `openwrt/bin/targets/ath79/generic/`
