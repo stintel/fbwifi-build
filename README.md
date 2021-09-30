@@ -29,6 +29,9 @@ See [setup.py](https://github.com/epoger/fbwifi-build/blob/main/setup.py) and [c
 
 ## Building OpenWrt
 
+References:
+- https://openwrt.org/docs/guide-developer/build-system/use-buildsystem
+
 Once setup.py has successfully completed, you are ready to build OpenWrt.  The resulting flash image will include OpenWrt along with our custom packages and boot scripts.
 
 ```
@@ -43,3 +46,26 @@ rm -f nohup.out && nohup bash -c 'date >starttime ; make -j $(nproc) defconfig c
 ```
 
 Once the build is complete, you will find the output files in (e.g.) `openwrt/bin/targets/ath79/generic/`
+
+## Updating the OpenWrt image on the target device
+
+References:
+- https://openwrt.org/docs/guide-user/installation/sysupgrade.cli 
+- https://openwrt.org/docs/techref/sysupgrade 
+
+*Assuming your target device is already running some version of OpenWrt*, you can install your newly built system image as follows:
+
+On your build machine, cd into the directory containing the output files (e.g., `openwrt/bin/targets/ath79/generic/`) and scp the `sha256sums` and `openwrt-*-squashfs-sysupgrade.bin` files to your target device's `/tmp` directory.
+
+Then ssh into your target device and run the following commands (as root):
+```
+cd /tmp
+sha256sum openwrt-*-squashfs-sysupgrade.bin
+grep sysupgrade sha256sums 
+#  ensure the two values are the same
+sysupgrade -n -v openwrt-*-squashfs-sysupgrade.bin
+```
+
+The sysupgrade process may take up to 5 minutes or so, and the device should be up and running the new code without further intervention (no need for additional power cycle, etc.).
+
+Once it is up and running again, if you ssh into the target device and view contents of the `/fbwifi-build-info` file, you'll see the commit hash at which this system image was built.
