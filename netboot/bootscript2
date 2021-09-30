@@ -1,0 +1,40 @@
+#!/bin/sh
+echo
+echo "Running bootscript2"
+
+# Indicate current status by updating SSID.
+set_status_ssid()
+{
+	STATUS=$1
+	RAWMAC1=$(cat /sys/class/net/eth0/address)
+	RAWMAC2=${RAWMAC1//:/}
+	MACLAST6=${RAWMAC2:6:6}
+	SSID="FBWiFi_${STATUS}_${MACLAST6}"
+	echo Setting status SSID to $SSID
+	uci set wireless.default_radio0.ssid="$SSID"
+	reload_config
+}
+
+set_status_ssid SettingLanIP
+ROUTER_IP=$(ip route | grep default | awk '{print $3}')
+if [[ $ROUTER_IP == "192*" ]]; then
+	MY_LAN_IP="172.16.0.1"
+else
+	MY_LAN_IP="192.168.0.1"
+fi
+echo ROUTER_IP is $ROUTER_IP, so MY_LAN_IP will be $MY_LAN_IP
+uci set network.lan.ipaddr="$MY_LAN_IP"
+reload_config
+
+set_status_ssid SettingRootPassword
+PASSWD="374clipper"
+passwd <<EOF
+${PASSWD}
+${PASSWD}
+EOF
+
+echo Final setup steps...
+uci set wireless.default_radio0.ssid="FBWiFi Setup Netboot"
+uci set wireless.default_radio0.encryption="none"
+reload_config
+

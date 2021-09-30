@@ -1,12 +1,12 @@
 #!/bin/sh
 #
-# bootscript1 -- performs the minimum operations necessary to: 
+# bootscript1 -- performs the minimum operations necessary to:
 # - get WAN interface configured and connected to the Internet
 # - download bootscript2 (or fall back to a local version) and launch it
 
 echo
 echo "Running bootscript1"
-BOOTSCRIPT2_SOURCE_URL=https://raw.githubusercontent.com/epoger/device-configs/main/fbwifi-v1/bootscript2
+BOOTSCRIPT2_SOURCE_URL=https://raw.githubusercontent.com/epoger/fbwifi-build/main/netboot/bootscript2
 BOOTSCRIPT2_SOURCE_LOCAL=/etc/bootscript2-local
 BOOTSCRIPT2_DEST=/tmp/bootscript2
 
@@ -46,4 +46,3 @@ else
 	cp $BOOTSCRIPT2_SOURCE_LOCAL $BOOTSCRIPT2_DEST
 fi
 source $BOOTSCRIPT2_DEST
-
