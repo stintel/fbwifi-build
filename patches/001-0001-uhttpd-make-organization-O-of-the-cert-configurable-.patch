@@ -1,0 +1,61 @@
+From 2c6c1501af664490ec9b701b46a201e21c670b96 Mon Sep 17 00:00:00 2001
+From: Martin Schiller <ms@dev.tdt.de>
+Date: Mon, 4 May 2020 16:13:13 +0200
+Subject: [PATCH] uhttpd: make organization (O=) of the cert configurable via
+ uci
+
+Make the organization (O=) of the cert configurable via uci. If not
+configured, use a combination of "OpenWrt" and an unique id like it was
+done before.
+
+Signed-off-by: Martin Schiller <ms@dev.tdt.de>
+---
+ package/network/services/uhttpd/Makefile          | 2 +-
+ package/network/services/uhttpd/files/uhttpd.init | 5 +++--
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/package/network/services/uhttpd/Makefile b/package/network/services/uhttpd/Makefile
+index 8f58271127..781512bd99 100644
+--- a/package/network/services/uhttpd/Makefile
++++ b/package/network/services/uhttpd/Makefile
+@@ -8,7 +8,7 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=uhttpd
+-PKG_RELEASE:=1
++PKG_RELEASE:=2
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL=$(PROJECT_GIT)/project/uhttpd.git
+diff --git a/package/network/services/uhttpd/files/uhttpd.init b/package/network/services/uhttpd/files/uhttpd.init
+index 869f79bea2..e7709941c2 100755
+--- a/package/network/services/uhttpd/files/uhttpd.init
++++ b/package/network/services/uhttpd/files/uhttpd.init
+@@ -35,13 +35,14 @@ generate_keys() {
+ 	local cfg="$1"
+ 	local key="$2"
+ 	local crt="$3"
+-	local days bits country state location commonname
++	local days bits country state location organization commonname
+ 
+ 	config_get days       "$cfg" days
+ 	config_get bits       "$cfg" bits
+ 	config_get country    "$cfg" country
+ 	config_get state      "$cfg" state
+ 	config_get location   "$cfg" location
++	config_get organization "$cfg" organization
+ 	config_get commonname "$cfg" commonname
+ 	config_get key_type   "$cfg" key_type
+ 	config_get ec_curve   "$cfg" ec_curve
+@@ -56,7 +57,7 @@ generate_keys() {
+ 	[ -n "$GENKEY_CMD" ] && {
+ 		$GENKEY_CMD \
+ 			-days ${days:-730} -newkey ${KEY_OPTS} -keyout "${UHTTPD_KEY}.new" -out "${UHTTPD_CERT}.new" \
+-			-subj /C="${country:-ZZ}"/ST="${state:-Somewhere}"/L="${location:-Unknown}"/O="${commonname:-OpenWrt}$UNIQUEID"/CN="${commonname:-OpenWrt}"
++			-subj /C="${country:-ZZ}"/ST="${state:-Somewhere}"/L="${location:-Unknown}"/O="${organization:-OpenWrt$UNIQUEID}"/CN="${commonname:-OpenWrt}"
+ 		sync
+ 		mv "${UHTTPD_KEY}.new" "${UHTTPD_KEY}"
+ 		mv "${UHTTPD_CERT}.new" "${UHTTPD_CERT}"
+-- 
+2.32.0
+

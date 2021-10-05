@@ -1,0 +1,47 @@
+From 6393ea15815e57802377ebecb17edf8ad20a0736 Mon Sep 17 00:00:00 2001
+From: Stijn Tintel <stijn@linux-ipv6.be>
+Date: Fri, 20 Aug 2021 14:33:51 +0300
+Subject: [PATCH] uhttpd: add config option for json_script
+
+Add a config option for json_script instead of unconditionally including
+all json files in /etc/uhttpd in every uhttpd instance. This makes it
+possible to configure a single instance with an unconditional redirect,
+which currently renders all other uhttpd instances unusable.
+
+Signed-off-by: Stijn Tintel <stijn@linux-ipv6.be>
+Acked-by: Felix Fietkau <nbd@nbd.name>
+---
+ package/network/services/uhttpd/Makefile          | 2 +-
+ package/network/services/uhttpd/files/uhttpd.init | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/package/network/services/uhttpd/Makefile b/package/network/services/uhttpd/Makefile
+index 781512bd99..dce5aa87b8 100644
+--- a/package/network/services/uhttpd/Makefile
++++ b/package/network/services/uhttpd/Makefile
+@@ -8,7 +8,7 @@
+ include $(TOPDIR)/rules.mk
+ 
+ PKG_NAME:=uhttpd
+-PKG_RELEASE:=2
++PKG_RELEASE:=3
+ 
+ PKG_SOURCE_PROTO:=git
+ PKG_SOURCE_URL=$(PROJECT_GIT)/project/uhttpd.git
+diff --git a/package/network/services/uhttpd/files/uhttpd.init b/package/network/services/uhttpd/files/uhttpd.init
+index e7709941c2..30fd7b4259 100755
+--- a/package/network/services/uhttpd/files/uhttpd.init
++++ b/package/network/services/uhttpd/files/uhttpd.init
+@@ -196,7 +196,8 @@ start_instance()
+ 		append_bool "$cfg" redirect_https "-q" 0
+ 	}
+ 
+-	for file in /etc/uhttpd/*.json; do
++	config_get json_script "$cfg" json_script
++	for file in $json_script; do
+ 		[ -s "$file" ] && procd_append_param command -H "$file"
+ 	done
+ 
+-- 
+2.32.0
+
